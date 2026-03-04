@@ -9,53 +9,70 @@ Este repositorio contiene un análisis de punta a punta para predecir la **cance
 
 
 ---
-
-## 🛠️ Tecnologías y Herramientas
-* **Análisis de Datos:** `Pandas`, `NumPy`
-* **Visualización:** `Matplotlib`, `Seaborn`
-* **Machine Learning:** `Scikit-Learn` (Regresión Logística, Random Forest)
-* **Balanceo de Datos:** `SMOTE` 
-
+## 📁 Estructura del Proyecto
+El repositorio está organizado de la siguiente manera:
+* **`TelecomX_Analysis.ipynb`**: Cuaderno principal con todo el flujo de trabajo (Limpieza, EDA, Modelado).
+* **`data/`**: Carpeta que contiene el dataset original en JSON y los datos procesados en formato CSV.
+* **`visualizaciones/`**: Carpeta con los gráficos exportados (Matrices de confusión, Importancia de variables, Boxplots).
+* **`README.md`**: Descripción detallada del proyecto.
 ---
-## 📈 Proceso de Análisis
-1. Exploración y Preparación 
-Identificamos que las variables con mayor impacto en la decisión del cliente son el Tipo de Contrato, los Meses de Permanencia y el Monto Mensual. Se realizó un preprocesamiento de datos que incluyó:
+## ⚙️ Preparación de los Datos
+El proceso de ingeniería de datos se dividió en etapas críticas:
 
-* Conversión de tipos de datos numéricos.
+### 1. Clasificación de Variables
+* **Numéricas:** `Meses_Permanencia` (tenure), `Monto_Mensual`, `Monto_Total`.
+* **Categóricas:** `Genero`, `Tipo_Contrato`, `Socio`, `Dependientes`, entre otras.
 
-* Tratamiento de valores nulos y duplicados.
+### 2. Normalización y Codificación
+* **Codificación:** Se aplicó `pd.get_dummies` para transformar variables categóricas en numéricas (One-Hot Encoding).
+* **Normalización:** Se utilizó `StandardScaler` para los modelos de Regresión Logística, asegurando que variables con rangos grandes (como Monto Total) no sesguen el modelo.
+* **Balanceo:** Se utilizó la técnica **SMOTE** para equilibrar las clases, ya que el número de clientes que no cancelan era superior a los que sí.
 
-* Estandarización de variables para modelos sensibles a la escala.
-
-2. Modelado y Evaluación
-Se entrenaron y compararon dos arquitecturas para maximizar la detección de clientes en riesgo:
-* Regresión Logística: (Con normalización) para capturar tendencias lineales.
-* Random Forest: (Modelo de ensamble) para capturar comportamientos no lineales complejos.
-
----
-
-## 📈 Hallazgos Principales (EDA)
-Durante el Análisis Exploratorio de Datos, se determinaron los siguientes puntos clave:
-1. **Contratos:** Los clientes con contrato **mes a mes** representan el mayor volumen de fugas.
-2. **Permanencia:** El riesgo de cancelación disminuye drásticamente después de los **12 meses** de antigüedad.
-3. **Cargos:** El monto mensual facturado tiene un impacto directo en la decisión de abandono.
+### 3. Separación de Datos
+Se realizó una división de **70% Entrenamiento** y **30% Prueba** utilizando `train_test_split` con una semilla aleatoria (`random_state=42`) para garantizar la reproducibilidad de los resultados.
 
 ---
 
-## 🤖 Modelado y Resultados
-Se compararon dos modelos, siendo la **Regresión Logística** la más eficiente para los objetivos de negocio (priorizando la detección sobre la precisión absoluta).
+## 📈 Análisis Exploratorio (EDA) - Insights
+Durante el análisis, se obtuvieron los siguientes hallazgos visuales:
 
-| Métrica | Regresión Logística | Random Forest |
-| :--- | :---: | :---: |
-| **Exactitud** | 85.3% | 86.6% |
-| **Recall (Detección)** | **98.6%** | 86.8% |
-| **F1-Score** | **0.87** | 0.86 |
-
+* **Contratos vs Cancelación:** Los gráficos de barras revelaron que los clientes con contrato **Mes a Mes** tienen la tasa de deserción más alta.
+* **Impacto de la Permanencia:** Los Boxplots mostraron que el riesgo de fuga se concentra en los clientes con **menos de 12 meses** de antigüedad.
+* **Gasto Mensual:** Se observó que los clientes que cancelan suelen tener cargos mensuales promedio más altos que los que permanecen.
 
 ---
 
-## 💡 Estrategias de Retención Recomendadas
-* **Incentivos de Contrato:** Bonos especiales para clientes que migren de planes mensuales a anuales.
-* **Optimización de Planes:** Ofrecer proactivamente ajustes de tarifa a clientes con cargos mensuales elevados que presenten patrones de uso decreciente.
+## 🤖 Modelización y Justificación
+Se entrenaron dos modelos con enfoques distintos:
+1. **Regresión Logística:** Elegido por su facilidad de interpretación y su excelente **Recall (98.6%)**, ideal para no dejar escapar a ningún cliente potencial en riesgo.
+2. **Random Forest:** Elegido por su capacidad para manejar relaciones no lineales y proporcionar una **importancia de variables** robusta basada en la reducción de impureza de Gini.
 
-* Priorizar la atención al cliente durante los primeros 6 meses, detectados como el periodo de mayor vulnerabilidad.
+---
+
+## 🚀 Instrucciones de Ejecución
+
+### 1. Instalación de Bibliotecas
+Asegúrate de tener instalado Python 3.12 y ejecuta el siguiente comando para instalar las dependencias necesarias:
+
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn imbalanced-learn
+  
+### 2. Carga de Datos
+Para cargar los datos procesados dentro del cuaderno, utiliza el siguiente bloque de código:
+
+```python
+import pandas as pd
+
+# Carga del dataset procesado
+df = pd.read_csv('data/telecom_processed.csv')
+
+
+
+3. Ejecución
+Sigue estos pasos para reproducir el análisis:
+
+Abre el archivo TelecomX_Analysis.ipynb en VS Code o Google Colab.
+
+Asegúrate de que la ruta del dataset en el código coincida con la ubicación de tu archivo .csv o .json.
+
+Ejecuta las celdas secuencialmente para observar el preprocesamiento, los resultados del entrenamiento y las métricas de evaluación final.
